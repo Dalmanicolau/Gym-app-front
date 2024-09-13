@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext'; // Asumiendo que ya tienes un AuthContext para manejar la autenticación
 import { useNavigate } from 'react-router-dom';
 
+
 const NavBar = () => {
   const { user, logout } = useContext(AuthContext); // user es el usuario logueado
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -29,7 +30,7 @@ const NavBar = () => {
           >
             <img
               className="w-10 h-10 rounded-full"
-              src={`/assets/avatar.png=${user?.username}`}
+              src={`https://api.dicebear.com/9.x/bottts-neutral/svg?seed=${user?.username}`}
               alt="Avatar"
             />
           </button>
