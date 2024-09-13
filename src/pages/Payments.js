@@ -24,7 +24,7 @@ function Payments() {
   useEffect(() => {
     const filtered = payments.filter(
       (payment) =>
-        payment.member?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        payment?.member?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         payment.activity.some((activity) =>
           activity.name.toLowerCase().includes(searchTerm.toLowerCase())
         )
