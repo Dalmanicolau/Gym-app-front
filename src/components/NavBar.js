@@ -29,7 +29,7 @@ const NavBar = () => {
           >
             <img
               className="w-10 h-10 rounded-full"
-              src={`/assets/avatar.png?username=${user?.username}`}
+              src={`/assets/avatar.png?=${user?.username}`}
               alt="Avatar"
             />
           </button>
