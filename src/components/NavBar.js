@@ -30,7 +30,7 @@ const NavBar = () => {
           >
             <img
               className="w-10 h-10 rounded-full"
-              src={`https://api.dicebear.com/9.x/fun-emoji/svg?seed=Mittens&backgroundColor=71cf62,d9915b,f6d594,fcbc34,059ff2${user?.username}`}
+              src={`https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user?.username}&backgroundColor=71cf62,d9915b,f6d594,fcbc34,059ff2`}
               alt="Avatar"
             />
           </button>
