@@ -9,37 +9,38 @@ function Login() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-const [input, setInput] = useState({
+  const [input, setInput] = useState({
     username: "",
     password: "",
   });
 
   const handlerChange = (e) => {
     setInput({ ...input, [e.target.name]: e.target.value });
-}
+  };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  try {
-    const userData = await dispatch(loginAction(input));
-    login(userData);
-    navigate("/dashboard");
-  } catch (error) {
-    console.log("Error al iniciar sesión", error);
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const userData = await dispatch(loginAction(input));
+      login(userData);
+      navigate("/dashboard");
+    } catch (error) {
+      console.log("Error al iniciar sesión", error);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-4 bg-white rounded shadow">
-        <h2 className="text-2xl font-bold text-center">Admin Login</h2>
+        <h2 className="text-2xl font-bold text-center">Iniciar Sesion</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block mb-1 text-gray-700" htmlFor="username">
-              Username
+              Usuario
             </label>
             <input
-               // Cambiado de email a username
+              // Cambiado de email a username
+              placeholder="Ingresa tu usuario"
               name="username" // Cambiado de email a text
               value={input.username} // Cambiado de email a username
               onChange={handlerChange} // Cambiado de email a username
@@ -49,9 +50,11 @@ const handleSubmit = async (e) => {
           </div>
           <div>
             <label className="block mb-1 text-gray-700" htmlFor="password">
-              Password
+              Contraseña
             </label>
             <input
+              placeholder="Ingresa tu contraseña"
+              type="password"
               name="password"
               value={input.password}
               onChange={handlerChange}
@@ -63,7 +66,7 @@ const handleSubmit = async (e) => {
             type="submit"
             className="w-full py-2 text-white bg-blue-500 rounded hover:bg-blue-600"
           >
-            Login
+            Ingresar
           </button>
         </form>
       </div>

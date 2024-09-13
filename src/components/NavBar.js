@@ -29,7 +29,7 @@ const NavBar = () => {
           >
             <img
               className="w-10 h-10 rounded-full"
-              src={`https://api.dicebear.com/6.x/bottts/svg?seed=${user?.username}`}
+              src={`/assets/avatar.png?username=${user?.username}`}
               alt="Avatar"
             />
           </button>
