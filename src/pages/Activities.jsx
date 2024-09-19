@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
-import api from '../services/api';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchActivities } from '../redux/actions/Activity'; // Asegúrate de importar la acción correctamente
 import { GiStrongMan } from "react-icons/gi";
 
 function Activities() {
-  const [activities, setActivities] = useState([]);
+  // Obtener las actividades desde el estado global
+  const activities = useSelector((state) => state.activities.activities);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    // Simulación de obtener datos de la API
-    api.get('/activities')
-      .then(response => setActivities(response.data))
-      .catch(error => console.error(error));
-  }, []);
+    // Despachar la acción para obtener actividades
+    dispatch(fetchActivities());
+  }, [dispatch]);
 
   // Función para traducir las categorías
   const translateCategory = (category) => {
@@ -40,7 +41,7 @@ function Activities() {
             </h2>
             <div className="p-4">
               {/* Se traduce la categoría utilizando la función */}
-              <p className="mb-1"><strong>Categoria:</strong> {translateCategory(activity.category)}</p>
+              <p className="mb-1"><strong>Categoría:</strong> {translateCategory(activity.category)}</p>
               <p><strong>Precio:</strong> {activity.price}</p>
             </div>
             <GiStrongMan className='justify-end ml-[80%] mb-1 w-20 h-20'/>
