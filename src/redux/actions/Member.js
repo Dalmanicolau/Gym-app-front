@@ -5,6 +5,7 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 export const ADD_MEMBER = "ADD_MEMBER";
 export const SET_MEMBERS = "SET_MEMBERS";
 export const SET_ERROR = "SET_ERROR";
+export const MODIFY_MEMBER = "MODIFY_MEMBER"
 
 // Acción para agregar un miembro
 export const addMember = (formData) => async (dispatch) => {
@@ -23,6 +24,25 @@ export const addMember = (formData) => async (dispatch) => {
     throw error;
   }
 };
+
+
+export const modifyMember = (member) => async (dispatch) => {
+  try {
+    const { data } = await axios.put(`${BASE_URL}/members/${member._id}`, member);
+    dispatch({
+      type: 'MODIFY_MEMBER_SUCCESS',
+      payload: data,
+    });
+    return data;
+  } catch (error) {
+    dispatch({
+      type: 'MODIFY_MEMBER_FAIL',
+      payload: error.response ? error.response.data : error.message,
+    });
+    throw error;
+  }
+};
+
 
 // Acción para renovar el plan de un miembro
 export const renewMemberPlan = (memberId) => async (dispatch) => {

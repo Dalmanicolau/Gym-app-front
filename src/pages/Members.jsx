@@ -1,17 +1,34 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMembers } from "../redux/actions/Member";
+import { fetchMembers, renewMemberPlan } from "../redux/actions/Member";
+import { fetchActivities } from "../redux/actions/Activity"; // Acción para traer actividades
 import NewMemberModal from "../components/NewMemberModal";
 import PaymentModal from "../components/PaymentModal";
-import { renewMemberPlan } from "../redux/actions/Member";
+import EditMemberModal from "../components/EditMemberModal"; // Importa el modal de edición
 import { FaUser } from "react-icons/fa";
+import { RiPassExpiredLine } from "react-icons/ri";
+import { FaUserEdit } from "react-icons/fa";
+import { IoMdPersonAdd } from "react-icons/io";
+import { createSelector } from "reselect"; // Importamos reselect para memoizar
+
+// Creamos un selector memoizado
+const selectMembersData = createSelector(
+  (state) => state.members.members,
+  (state) => state.members.total,
+  (state) => state.activities.activities,
+  (members, total, activities) => ({
+    members,
+    total,
+    activities,
+  })
+);
 
 function Members() {
   const dispatch = useDispatch();
-  const { members, total } = useSelector((state) => ({
-    members: state.members.members,
-    total: state.members.total
-  }));  
+
+  // Aquí utilizamos el selector memoizado en lugar de un selector directo
+  const { members, total, activities } = useSelector(selectMembersData);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -20,8 +37,12 @@ function Members() {
   const itemsPerPage = 5;
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Estado para el modal de edición
+  const [selectedMemberToEdit, setSelectedMemberToEdit] = useState(null); // Miembro seleccionado para editar
+
   useEffect(() => {
     dispatch(fetchMembers(currentPage, itemsPerPage, searchTerm));
+    dispatch(fetchActivities()); // Traemos las actividades disponibles desde el backend
   }, [dispatch, currentPage, searchTerm]);
 
   const handleModalOpen = () => setIsModalOpen(true);
@@ -49,6 +70,17 @@ function Members() {
         );
       }
     }
+  };
+
+  const handleEditMember = () => {
+    const memberToEdit = members.find((member) => member._id === selectedMembers[0]);
+    setSelectedMemberToEdit(memberToEdit);
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditModalClose = () => {
+    setIsEditModalOpen(false);
+    setSelectedMemberToEdit(null);
   };
 
   const handlePageChange = (page) => {
@@ -80,14 +112,21 @@ function Members() {
               className="btn btn-primary text-white bg-blue-700 hover:bg-blue-800"
               onClick={handleModalOpen}
             >
-              Agregar Miembro
+              <IoMdPersonAdd className="text-xl" />
             </button>
             <button
               className={`btn btn-secondary text-white bg-orange-600 hover:bg-orange-700 ${selectedMembers.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={handleRenewPlan}
               disabled={selectedMembers.length === 0}
             >
-              Renovar plan
+              <RiPassExpiredLine className="text-xl" />
+            </button>
+            <button
+              className={`btn btn-secondary text-white bg-green-600 hover:bg-green-700 ${selectedMembers.length !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+              onClick={() => handleEditMember()}
+              disabled={selectedMembers.length !== 1} // Solo habilitar si hay un miembro seleccionado
+            >
+              <FaUserEdit className="text-xl" />
             </button>
           </div>
         </div>
@@ -100,6 +139,7 @@ function Members() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Celular</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Ingreso</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actividad</th>
               </tr>
@@ -122,21 +162,27 @@ function Members() {
                           <img
                             src={member.avatar}
                             alt={member.name}
-                            className="h-12 w-12 rounded-full object-cover"
+                            className="h-12 w-12 rounded-full border border-gray-300 object-cover"
                           />
                         ) : (
-                          <FaUser className="text-gray-600 text-4xl" />
+                          <FaUser className="h-12 w-12 rounded-full border border-gray-300" />
                         )}
                       </div>
-                      <div>
-                        <div className="text-gray-700 font-semibold">{member.name}</div>
-                      </div>
+                      {member.name}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{member.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(member.plan.initDate).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{member.cellphone}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(member?.plan.initDate).toLocaleDateString()}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {member.activities.map((activity) => activity.name).join(", ")}
+                    {member.activities.map((activity, idx) => (
+                      <span
+                        key={idx}
+                        className="px-1 whitespace-nowrap text-sm text-gray-500"
+                      >
+                        {`${activity.name}${idx < member.activities.length - 1 ? ',' : ''}`}
+                      </span>
+                    ))}
                   </td>
                 </tr>
               ))}
@@ -164,16 +210,23 @@ function Members() {
             Siguiente
           </button>
         </div>
-
-        {/* Modales */}
-        {isModalOpen && <NewMemberModal closeModal={handleModalClose} />}
-        {isPaymentModalOpen && renewedMember && (
-          <PaymentModal
-            member={renewedMember}
-            closePaymentModal={() => setIsPaymentModalOpen(false)}
+      </div>
+      {/* Modales */}
+      {isModalOpen && <NewMemberModal isOpen={isModalOpen} closeModal={handleModalClose} />}
+      {isPaymentModalOpen && renewedMember && (
+        <PaymentModal
+          isOpen={isPaymentModalOpen}
+          member={renewedMember} closePaymentModal={() => setIsPaymentModalOpen(false)}
+        />
+      )}
+      {
+        isEditModalOpen && selectedMemberToEdit && (
+          <EditMemberModal isOpen={isEditModalOpen}
+            member={selectedMemberToEdit}
+            activities={activities}
+            closeModal={handleEditModalClose}
           />
         )}
-      </div>
     </div>
   );
 }

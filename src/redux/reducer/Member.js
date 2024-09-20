@@ -1,5 +1,5 @@
-// src/redux/reducers/memberReducer.js
-import { ADD_MEMBER, SET_MEMBERS, SET_ERROR } from '../actions/Member';
+
+import { ADD_MEMBER, SET_MEMBERS, SET_ERROR, MODIFY_MEMBER } from '../actions/Member';
 
 const initialState = {
   members: [],
@@ -18,6 +18,11 @@ const memberReducer = (state = initialState, action) => {
         console.log("miembro añadido", action.payload);
         return { 
           ...state, 
+          members: [...state.members, action.payload]
+        };
+      case MODIFY_MEMBER:
+        return { 
+          ...state,
           members: [...state.members, action.payload]
         };      
     case SET_ERROR:

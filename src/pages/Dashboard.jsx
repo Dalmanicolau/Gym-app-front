@@ -17,9 +17,7 @@ function Dashboard() {
   const {
     membersCount,
     totalIncome,
-    membersPerMonth,
     activityByIncome,
-    notifications,
     sportsByMembers,
     table, // Tabla de miembros por mes
     incomeByMonth, // Ingresos por mes

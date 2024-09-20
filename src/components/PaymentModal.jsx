@@ -21,6 +21,12 @@ function PaymentModal({ member, closePaymentModal }) {
     closePaymentModal(); // Cerrar modal después de confirmar el pago
   };
 
+  const handleClose = (e) => {
+    e.stopPropagation(); // Evita que el clic se propague a otros elementos
+    console.log('Cancelar clickeado');
+    closePaymentModal();
+  };
+  
   // Buscar los nombres de las actividades
   const memberActivities = member?.activities?.map((activityId) => {
     const activity = activities.find((act) => act._id === activityId);
@@ -30,7 +36,7 @@ function PaymentModal({ member, closePaymentModal }) {
   return (
     <div className="modal modal-open">
       
-      <div className="modal-box">
+      <div className="modal-box modal-middle">
     
         <h3 className="font-bold text-2xl  mb-4">Confirmar Pago</h3>
         
@@ -59,7 +65,7 @@ function PaymentModal({ member, closePaymentModal }) {
         </div>
         
         <div className="modal-action">
-          <button className="btn btn-ghost" onClick={closePaymentModal}>
+          <button className="btn btn-ghost" onClick={handleClose}>
             Cancelar
           </button>
           <button className="btn btn-primary bg-blue-600" onClick={handlePayment}>
