@@ -8,8 +8,6 @@ function Notifications() {
   const { notifications, loading } = useSelector(state => state.notifications);
   const { members } = useSelector(state => state.members);
 
-  console.log(members);
-
   useEffect(() => {
     dispatch(getNotifications());
   }, [dispatch]);
@@ -22,8 +20,6 @@ function Notifications() {
     return <div className="p-6 text-center text-gray-600">Cargando notificaciones...</div>;
   }
 
-  console.log(notifications);
-
   const handleSendWhatsApp = (memberId, expirationDate) => {
     // Busca al miembro por el ID
     const memberFound = members.find(m => m._id === memberId);
@@ -32,12 +28,14 @@ function Notifications() {
       return;
     }
 
-    console.log(memberFound);
-
-    const message = `Hola ${memberFound.name}, ¿cómo estás? Nos comunicamos desde Phisycal Fitness para recordarte que tu plan vence el día ${expirationDate}. Te esperamos nuevamente, que tengas un lindo día!!`;
+    const expiringDate = new Date(memberFound.plan.expirationDate).toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    })
+    const message = `Hola ${memberFound.name}, ¿cómo estás? Nos comunicamos desde Phisycal Fitness para recordarte que tu plan vence el día ${expiringDate}. Te esperamos nuevamente, que tengas un lindo día!!`;
     const encodedMessage = encodeURIComponent(message);
     const phoneNumber = memberFound.cellphone;
-    console.log(phoneNumber);
     const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
 
     window.open(url, '_blank');
