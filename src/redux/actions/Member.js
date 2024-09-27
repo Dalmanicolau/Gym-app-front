@@ -5,7 +5,8 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 export const ADD_MEMBER = "ADD_MEMBER";
 export const SET_MEMBERS = "SET_MEMBERS";
 export const SET_ERROR = "SET_ERROR";
-export const MODIFY_MEMBER = "MODIFY_MEMBER"
+export const MODIFY_MEMBER = "MODIFY_MEMBER";
+export const GET_MEMBERS = "GET_MEMBERS";
 
 // Acción para agregar un miembro
 export const addMember = (formData) => async (dispatch) => {
@@ -62,9 +63,6 @@ export const renewMemberPlan = (memberId) => async (dispatch) => {
   }
 };
 
-
-
-// Acción para configurar los miembros en el estado
 export const setMembers = (members) => ({
   type: SET_MEMBERS,
   payload: members,
@@ -78,4 +76,18 @@ export const fetchMembers = (page = 1, limit = 10, searchTerm = '' ) => async (d
   } catch (error) {
     dispatch({ type: SET_ERROR, payload: error.message });
   }
+};
+
+export const getMembers = () => {
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.get(`${BASE_URL}/members/all`);
+      dispatch({
+        type: GET_MEMBERS,
+        payload: data,
+      });
+    } catch (error) {
+        console.error(error, "Error en memberAction")
+    }
+  } 
 };

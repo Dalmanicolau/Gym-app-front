@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
             try {
                 const parsedUser = JSON.parse(loggedUser);  // Verifica si es JSON válido
                 setUser(parsedUser);
-                console.log('User found in localStorage:', parsedUser);  // Verificación
             } catch (error) {
                 console.error("Error parsing user data:", error);  // Si el JSON no es válido
             }

@@ -1,5 +1,5 @@
 
-import { ADD_MEMBER, SET_MEMBERS, SET_ERROR, MODIFY_MEMBER } from '../actions/Member';
+import { ADD_MEMBER, SET_MEMBERS, SET_ERROR, MODIFY_MEMBER, GET_MEMBERS } from '../actions/Member';
 
 const initialState = {
   members: [],
@@ -20,6 +20,11 @@ const memberReducer = (state = initialState, action) => {
           ...state, 
           members: [...state.members, action.payload]
         };
+        case GET_MEMBERS:
+          return {
+            ...state,
+            members: action.payload
+          }
       case MODIFY_MEMBER:
         return { 
           ...state,
