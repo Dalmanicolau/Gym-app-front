@@ -20,20 +20,30 @@ function Notifications() {
     return <div className="p-6 text-center text-gray-600">Cargando notificaciones...</div>;
   }
 
-  const handleSendWhatsApp = (memberId, expirationDate) => {
-    // Busca al miembro por el ID
+  const handleSendWhatsApp = (memberId, notificationType) => {
+    // Buscar al miembro por el ID
     const memberFound = members.find(m => m._id === memberId);
     if (!memberFound) {
       console.error("Miembro no encontrado");
       return;
     }
 
-    const expiringDate = new Date(memberFound.plan.expirationDate).toLocaleDateString("es-ES", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    })
-    const message = `Hola ${memberFound.name}, ¿cómo estás? Nos comunicamos desde Phisycal Fitness para recordarte que tu plan vence el día ${expiringDate}. Te esperamos nuevamente, que tengas un lindo día!!`;
+    let message = '';
+    
+    // Diferenciar entre notificación de cumpleaños o de vencimiento de plan
+    if (notificationType === 'cumpleaños') {
+      // Mensaje de cumpleaños
+      message = `¡Hola ${memberFound.name}! 🎉🎂 Nos gustaría desearte un muy feliz cumpleaños desde Phisycal Fitness. ¡Esperamos que tengas un día increíble!`;
+    } else {
+      // Mensaje de vencimiento de plan
+      const expiringDate = new Date(memberFound.plan.expirationDate).toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      message = `Hola ${memberFound.name}, ¿cómo estás? Nos comunicamos desde Phisycal Fitness para recordarte que tu plan vence el día ${expiringDate}. ¡Te esperamos nuevamente! Que tengas un lindo día.`;
+    }
+
     const encodedMessage = encodeURIComponent(message);
     const phoneNumber = memberFound.cellphone;
     const url = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
@@ -47,25 +57,29 @@ function Notifications() {
       <div className="p-6 bg-white rounded-lg shadow-md">
         {notifications?.length > 0 ? (
           <ul className="space-y-4">
-            {notifications?.map((notification) => (
-              <li key={notification._id} className="border-b pb-4 last:border-b-0">
-                <p className="text-lg font-semibold text-gray-800">{notification.title}</p>
-                <p className="text-sm text-gray-500">
-                  Fecha de notificación: {new Date(notification.createdAt).toLocaleDateString("es-ES", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </p>
-                {/* Botón para enviar WhatsApp */}
-                <button 
-                  className="mt-2 text-white bg-green-600 hover:bg-green-700 rounded px-4 py-2"
-                  onClick={() => handleSendWhatsApp(notification.member, notification.expirationDate)} // Asegúrate de usar el campo correcto para el ID del miembro
-                >
-                  Enviar WhatsApp
-                </button>
-              </li>
-            ))}
+            {notifications?.map((notification) => {
+              // Determinar el tipo de notificación según el título
+              const notificationType = notification.title.includes('cumpleaños') ? 'cumpleaños' : 'vencimiento';
+
+              return (
+                <li key={notification._id} className="border-b pb-4 last:border-b-0">
+                  <p className="text-lg font-semibold text-gray-800">{notification.title}</p>
+                  <p className="text-sm text-gray-500">
+                    Fecha de notificación: {new Date(notification.createdAt).toLocaleDateString("es-ES", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </p>
+                  <button 
+                    className="mt-2 text-white bg-green-600 hover:bg-green-700 rounded px-4 py-2"
+                    onClick={() => handleSendWhatsApp(notification.member, notificationType)}
+                  >
+                    Enviar WhatsApp
+                  </button>
+                </li>
+              );
+            })}
           </ul>
         ) : (
           <p className="text-center text-gray-600">No hay notificaciones disponibles.</p>

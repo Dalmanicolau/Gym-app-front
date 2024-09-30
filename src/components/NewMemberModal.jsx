@@ -15,6 +15,7 @@ function NewMemberModal({ closeModal }) {
     name: "",
     email: "",
     cellphone: "",
+    birthday: "",
     plan: {
       type: "Mensual",
       initDate: "",
@@ -115,6 +116,17 @@ function NewMemberModal({ closeModal }) {
                 required
               />
             </div>
+            <div className="form-control">
+              <label className="label">Fecha de naciemiento</label>
+              <input
+                type="date"
+                name="birthday"
+                value={formData.birthday}
+                onChange={handleInputChange}
+                className="input input-bordered"
+                required
+              />
+              </div>
             <div className="form-control">
               <label className="label">Fecha de Inicio del Plan</label>
               <input
