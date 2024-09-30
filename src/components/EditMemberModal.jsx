@@ -7,6 +7,7 @@ function EditMemberModal({ isOpen, member, activities, closeModal }) {
   const [selectedActivities, setSelectedActivities] = useState(member.activities.map(activity => activity._id));
   const [name, setName] = useState(member.name);
   const [email, setEmail] = useState(member.email);
+  const [birthday, setBirthday] = useState(member.birthday || '');
   const [phoneNumber, setPhoneNumber] = useState(member.phoneNumber || '');
 
   const handleActivityChange = (activityId) => {
@@ -22,6 +23,7 @@ function EditMemberModal({ isOpen, member, activities, closeModal }) {
       _id: member._id, 
       name,
       email,
+      birthday,
       phoneNumber,
       activities: selectedActivities,
       plan: member.plan
@@ -67,6 +69,15 @@ function EditMemberModal({ isOpen, member, activities, closeModal }) {
               type="tel"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
+              className="input input-bordered"
+            />
+          </div>
+          <div className="form-control">
+            <label className="label">Fecha de naciemiento</label>
+            <input
+              type="date"
+              value={birthday}
+              onChange={(e) => setBirthday(e.target.value)}
               className="input input-bordered"
             />
           </div>
