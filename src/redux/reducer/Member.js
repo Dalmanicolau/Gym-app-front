@@ -1,5 +1,5 @@
 
-import { ADD_MEMBER, SET_MEMBERS, SET_ERROR, MODIFY_MEMBER, GET_MEMBERS } from '../actions/Member';
+import { ADD_MEMBER, SET_MEMBERS, SET_ERROR, MODIFY_MEMBER_SUCCESS, GET_MEMBERS, RENEW_MEMBER_PLAN_SUCCESS } from '../actions/Member';
 
 const initialState = {
   members: [],
@@ -25,11 +25,18 @@ const memberReducer = (state = initialState, action) => {
             ...state,
             members: action.payload
           }
-      case MODIFY_MEMBER:
+      case MODIFY_MEMBER_SUCCESS:
         return { 
           ...state,
-          members: [...state.members, action.payload]
-        };      
+          members: state.members.map((member) =>
+          member._id === action.payload._id ? action.payload : member)
+        };
+        case RENEW_MEMBER_PLAN_SUCCESS:
+          return {
+            ...state,
+            members: state.members.map((member) =>
+              member._id === action.payload._id ? action.payload : member)
+          }      
     case SET_ERROR:
       return { ...state, error: action.payload };
     default:

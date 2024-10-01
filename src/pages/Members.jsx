@@ -81,6 +81,7 @@ function Members() {
   const handleEditModalClose = () => {
     setIsEditModalOpen(false);
     setSelectedMemberToEdit(null);
+    dispatch(fetchMembers(currentPage, itemsPerPage, searchTerm))
   };
 
   const handlePageChange = (page) => {
@@ -176,8 +177,11 @@ function Members() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{member.cellphone}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(member?.plan.initDate).toLocaleDateString()}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {member.birthday?.split('T')[0]}
+                    {member.birthday
+                      ? new Date(member.birthday).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                      : '...'}
                   </td>
+
 
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {member.activities.map((activity, idx) => (

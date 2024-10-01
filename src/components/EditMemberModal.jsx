@@ -8,7 +8,8 @@ function EditMemberModal({ isOpen, member, activities, closeModal }) {
   const [name, setName] = useState(member.name);
   const [email, setEmail] = useState(member.email);
   const [birthday, setBirthday] = useState(member.birthday || '');
-  const [phoneNumber, setPhoneNumber] = useState(member.phoneNumber || '');
+  const [phoneNumber, setPhoneNumber] = useState(member.cellphone || '');
+  const [initDate, setInitDate] = useState(member.plan?.initDate || '');
 
   const handleActivityChange = (activityId) => {
     setSelectedActivities((prevSelected) =>
@@ -26,7 +27,10 @@ function EditMemberModal({ isOpen, member, activities, closeModal }) {
       birthday,
       phoneNumber,
       activities: selectedActivities,
-      plan: member.plan
+      plan: {
+        ...member.plan,
+        initDate: initDate || member.plan?.initDate, // Actualiza initDate si se ha cambiado
+      }
     };
 
     try {
@@ -73,11 +77,20 @@ function EditMemberModal({ isOpen, member, activities, closeModal }) {
             />
           </div>
           <div className="form-control">
-            <label className="label">Fecha de naciemiento</label>
+            <label className="label">Fecha de nacimiento</label>
             <input
               type="date"
-              value={birthday}
+              value={birthday ? new Date(birthday).toISOString().split('T')[0] : ''}
               onChange={(e) => setBirthday(e.target.value)}
+              className="input input-bordered"
+            />
+          </div>
+          <div className="form-control">
+            <label className="label">Fecha de inicio del plan</label>
+            <input
+              type="date"
+              value={initDate ? new Date(initDate).toISOString().split('T')[0] : ''}
+              onChange={(e) => setInitDate(e.target.value)}
               className="input input-bordered"
             />
           </div>
