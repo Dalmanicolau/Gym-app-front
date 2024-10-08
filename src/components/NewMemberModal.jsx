@@ -19,6 +19,7 @@ function NewMemberModal({ closeModal }) {
     plan: {
       type: "Mensual",
       initDate: "",
+      price: 0, // Add a price field to the plan
     },
     activities: [],
     automaticRenewal: true,
@@ -35,11 +36,12 @@ function NewMemberModal({ closeModal }) {
   };
 
   const handlePlanChange = (e) => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       plan: {
         ...formData.plan,
-        [e.target.name]: e.target.value,
+        [name]: name === "price" ? parseFloat(value) : value,
       },
     });
   };
@@ -75,7 +77,6 @@ function NewMemberModal({ closeModal }) {
 
   return (
     <>
-      {/* Modal para registrar nuevo miembro */}
       <div className="modal modal-open">
         <div className="modal-box">
           <IoMdPersonAdd className="ml-[45%] h-10 w-10 text-gray-700" />
@@ -126,7 +127,7 @@ function NewMemberModal({ closeModal }) {
                 className="input input-bordered"
                 required
               />
-              </div>
+            </div>
             <div className="form-control">
               <label className="label">Fecha de Inicio del Plan</label>
               <input
@@ -150,7 +151,19 @@ function NewMemberModal({ closeModal }) {
                 <option value="Semestral">Semestral</option>
               </select>
             </div>
-
+            <div className="form-control">
+              <label className="label">Precio del Plan</label>
+              <input
+                type="number"
+                name="price"
+                value={formData.plan.price}
+                onChange={handlePlanChange}
+                className="input input-bordered"
+                min="0"
+                step="0.01"
+                required
+              />
+            </div>
             {/* Checkboxes para seleccionar actividades */}
             <div className="form-control">
               <label className="label">Actividades</label>
