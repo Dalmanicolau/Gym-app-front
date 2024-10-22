@@ -143,6 +143,7 @@ function Members() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Celular</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Ingreso</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Nacimiento</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vencimiento del Plan</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actividad</th>
               </tr>
             </thead>
@@ -181,7 +182,11 @@ function Members() {
                       ? new Date(member.birthday).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
                       : '...'}
                   </td>
-
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {member.plan && member.plan.expirationDate
+                      ? new Date(member.plan.expirationDate).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                      : 'N/A'}
+                  </td>    
 
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {member.activities.map((activity, idx) => (
