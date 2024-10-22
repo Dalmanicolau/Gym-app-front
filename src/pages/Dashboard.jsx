@@ -57,8 +57,8 @@ function Dashboard() {
   // Dataset para el gráfico de barras
   const barChartData = months.map((month, index) => ({
     month,
-    members: table[index] || 0,
-    income: incomeByMonth[index] || 0, // Usar los ingresos por mes correctos del dashboard
+    "Miembros Activos": table[index] || 0,
+    "Ingresos Mensuales": incomeByMonth[index] || 0,
   }));
 
   const valueFormatter = (value) => `$${value}`;
@@ -140,20 +140,30 @@ function Dashboard() {
 
         {/* Gráfico de Ingresos y Miembros por Mes */}
         <div className="p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">Ingresos y Miembros por Mes</h2>
-          <BarChart
-            className="p-2"
-            dataset={barChartData}
-            xAxis={[{ scaleType: 'band', dataKey: 'month' }]}
-            series={[
-              { dataKey: 'members', label: 'Miembros', color: '#1d4ed8' }, // Azul primario
-              { dataKey: 'income', label: 'Ingresos', color: '#ea580c', valueFormatter }, // Naranja secundario
-            ]}
-            width={400}
-            height={300}
-          />
-        </div>
-      </div>      
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Miembros Activos e Ingresos por Mes</h2>
+        <BarChart
+          className="p-2"
+          dataset={barChartData}
+          xAxis={[{ scaleType: 'band', dataKey: 'month' }]}
+          series={[
+            {   
+              dataKey: 'Miembros Activos',
+              label: 'Miembros Activos',
+              color: '#1d4ed8',
+              valueFormatter: (value) => `${value} miembros`
+            },
+            { 
+              dataKey: 'Ingresos Mensuales',
+              label: 'Ingresos',
+              color: '#ea580c',
+              valueFormatter: (value) => `$${value}`
+            },
+          ]}
+          width={400}
+          height={300}
+        />
+      </div>
+    </div>
     </div>
   );
 }
