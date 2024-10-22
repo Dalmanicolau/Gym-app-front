@@ -1,17 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addPayment } from "../redux/actions/Payments";
 
-function PaymentModal({ member, closePaymentModal }) {
+const PaymentModal = ({ member, closePaymentModal }) => {
   const dispatch = useDispatch();
   const activities = useSelector((state) => state.activities.activities);
   const [customAmount, setCustomAmount] = useState(member?.plan?.price || 0);
+  const [months, setMonths] = useState(1);
+  const basePrice = member?.plan?.price || 0;
+
+  useEffect(() => {
+    // Update total amount when months change
+    setCustomAmount((basePrice * months).toFixed(2));
+  }, [months, basePrice]);
 
   const handlePayment = () => {
     const paymentData = {
       member: member._id,
-      amount: parseFloat(customAmount), // Use the custom amount
+      amount: parseFloat(customAmount),
       activities: member.activities,
+      months: parseInt(months) // Include months in payment data
     };
 
     dispatch(addPayment(paymentData));
@@ -21,6 +29,15 @@ function PaymentModal({ member, closePaymentModal }) {
   const handleClose = (e) => {
     e.stopPropagation();
     closePaymentModal();
+  };
+
+  const handleMonthsChange = (e) => {
+    const newMonths = parseInt(e.target.value);
+    setMonths(newMonths);
+  };
+
+  const handleCustomAmountChange = (e) => {
+    setCustomAmount(e.target.value);
   };
 
   const memberActivities = member?.activities?.map((activityId) => {
@@ -49,21 +66,41 @@ function PaymentModal({ member, closePaymentModal }) {
         </div>
 
         <div className="mb-4">
-          <label
-            htmlFor="customAmount"
-            className="block text-lg font-bold mb-2"
+          <label htmlFor="months" className="block text-lg font-bold mb-2">
+            Cantidad de Meses:
+          </label>
+          <select
+            id="months"
+            value={months}
+            onChange={handleMonthsChange}
+            className="select select-bordered w-full"
           >
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((num) => (
+              <option key={num} value={num}>
+                {num} {num === 1 ? 'mes' : 'meses'}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="customAmount" className="block text-lg font-bold mb-2">
             Monto a Pagar:
           </label>
-          <input
-            type="number"
-            id="customAmount"
-            value={customAmount}
-            onChange={(e) => setCustomAmount(e.target.value)}
-            className="input input-bordered w-full"
-            min="0"
-            step="0.01"
-          />
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              id="customAmount"
+              value={customAmount}
+              onChange={handleCustomAmountChange}
+              className="input input-bordered w-full"
+              min="0"
+              step="0.01"
+            />
+            <span className="text-sm text-gray-500">
+              (${basePrice} × {months} {months === 1 ? 'mes' : 'meses'})
+            </span>
+          </div>
         </div>
 
         <div className="modal-action">
@@ -80,6 +117,6 @@ function PaymentModal({ member, closePaymentModal }) {
       </div>
     </div>
   );
-}
+};
 
 export default PaymentModal;

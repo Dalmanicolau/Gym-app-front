@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../context/AuthContext'; // Asumiendo que ya tienes un AuthContext para manejar la autenticación
-import { useNavigate } from 'react-router-dom';
-
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext"; // Asumiendo que ya tienes un AuthContext para manejar la autenticación
+import { useNavigate } from "react-router-dom";
 
 const NavBar = () => {
   const { user, logout } = useContext(AuthContext); // user es el usuario logueado
@@ -12,8 +11,8 @@ const NavBar = () => {
     console.log("Intentando cerrar sesión..."); // Verificación
     logout();
     console.log("Navegando a la página de login..."); // Verificación
-    navigate('/login'); // Redirigir a la página de login después de desloguear
-};
+    navigate("/login"); // Redirigir a la página de login después de desloguear
+  };
 
   /*const handleChangePassword = () => {
     navigate('/change-password'); // Redirigir a la página de cambio de contraseña
@@ -30,13 +29,14 @@ const NavBar = () => {
           >
             <img
               className="w-10 h-10 rounded-full"
-              src={`https://api.dicebear.com/9.x/fun-emoji/svg?seed=${user?.username || 'Mittens'}&backgroundColor=71cf62,d9915b,f6d594,fcbc34,059ff2`}
+              src={`https://api.dicebear.com/9.x/adventurer/svg?seed=${
+                user?.username || "Mittens"
+              }&backgroundColor=71cf62,d9915b,f6d594,fcbc34,059ff2`}
               alt="Avatar"
             />
           </button>
           {dropdownOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2">
-            
               <button
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full text-left"
                 onClick={handleLogout}
