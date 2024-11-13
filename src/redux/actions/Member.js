@@ -9,6 +9,7 @@ export const MODIFY_MEMBER_SUCCESS = "MODIFY_MEMBER_SUCCESS";
 export const GET_MEMBERS = "GET_MEMBERS";
 export const MODIFY_MEMBER_FAIL = "MODIFY_MEMBER_FAIL";
 export const RENEW_MEMBER_PLAN_SUCCESS = "RENEW_MEMBER_PLAN_SUCCESS";
+export const DELETE_MEMBER = "DELETE_MEMBER";
 
 // Acción para agregar un miembro
 export const addMember = (formData) => async (dispatch) => {
@@ -93,3 +94,17 @@ export const getMembers = () => {
     }
   } 
 };
+
+export const deleteMember = (memberId) => {
+  return async (dispatch) => {
+    try {
+      const { data } = await axios.delete(`${BASE_URL}/members/${memberId}`);
+      dispatch({
+        type: DELETE_MEMBER,
+        payload: data,
+      });      
+} catch (error) {
+      console.error(error, "Error en memberAction")
+    }
+  }
+}

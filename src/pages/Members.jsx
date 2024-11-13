@@ -6,10 +6,12 @@ import NewMemberModal from "../components/NewMemberModal";
 import PaymentModal from "../components/PaymentModal";
 import EditMemberModal from "../components/EditMemberModal"; // Importa el modal de edición
 import { FaUser } from "react-icons/fa";
+import { FaTrashAlt } from "react-icons/fa";
 import { RiPassExpiredLine } from "react-icons/ri";
 import { FaUserEdit } from "react-icons/fa";
 import { IoMdPersonAdd } from "react-icons/io";
 import { createSelector } from "reselect"; // Importamos reselect para memoizar
+import { deleteMember } from "../redux/actions/Member";
 
 // Creamos un selector memoizado
 const selectMembersData = createSelector(
@@ -35,7 +37,7 @@ function Members() {
   const [renewedMember, setRenewedMember] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Estado para el modal de edición
   const [selectedMemberToEdit, setSelectedMemberToEdit] = useState(null); // Miembro seleccionado para editar
@@ -73,7 +75,9 @@ function Members() {
   };
 
   const handleEditMember = () => {
-    const memberToEdit = members.find((member) => member._id === selectedMembers[0]);
+    const memberToEdit = members.find(
+      (member) => member._id === selectedMembers[0]
+    );
     setSelectedMemberToEdit(memberToEdit);
     setIsEditModalOpen(true);
   };
@@ -81,7 +85,7 @@ function Members() {
   const handleEditModalClose = () => {
     setIsEditModalOpen(false);
     setSelectedMemberToEdit(null);
-    dispatch(fetchMembers(currentPage, itemsPerPage, searchTerm))
+    dispatch(fetchMembers(currentPage, itemsPerPage, searchTerm));
   };
 
   const handlePageChange = (page) => {
@@ -90,10 +94,25 @@ function Members() {
 
   const totalPages = Math.ceil(total / itemsPerPage);
 
-  const filteredMembers = members?.filter(member =>
-    member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    member.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredMembers = members?.filter(
+    (member) =>
+      member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      member.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handleDeleteMember = async () => {
+    try {
+      await dispatch(
+        deleteMember(selectedMembers[0], currentPage, itemsPerPage, searchTerm)
+      );
+      setSelectedMembers([]);
+    } catch (error) {
+      console.error(
+        "Error al eliminar miembro:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  };
 
   return (
     <div className="p-6 bg-gray-50">
@@ -116,18 +135,37 @@ function Members() {
               <IoMdPersonAdd className="text-xl" />
             </button>
             <button
-              className={`btn btn-secondary text-white bg-orange-600 hover:bg-orange-700 ${selectedMembers.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`btn btn-secondary text-white bg-orange-600 hover:bg-orange-700 ${
+                selectedMembers.length === 0
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
               onClick={handleRenewPlan}
               disabled={selectedMembers.length === 0}
             >
               <RiPassExpiredLine className="text-xl" />
             </button>
             <button
-              className={`btn btn-secondary text-white bg-green-600 hover:bg-green-700 ${selectedMembers.length !== 1 ? "opacity-50 cursor-not-allowed" : ""}`}
+              className={`btn btn-secondary text-white bg-green-600 hover:bg-green-700 ${
+                selectedMembers.length !== 1
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
               onClick={() => handleEditMember()}
               disabled={selectedMembers.length !== 1} // Solo habilitar si hay un miembro seleccionado
             >
               <FaUserEdit className="text-xl" />
+            </button>
+            <button
+              className={`btn btn-secondary text-white bg-red-600 hover:bg-red-700 ${
+                selectedMembers.length !== 1
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+              onClick={() => handleDeleteMember()}
+              disabled={selectedMembers.length !== 1}
+            >
+              <FaTrashAlt className="text-xl" />
             </button>
           </div>
         </div>
@@ -138,18 +176,35 @@ function Members() {
             <thead className="bg-gray-100">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"></th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Celular</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Ingreso</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Nacimiento</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vencimiento del Plan</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actividad</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Nombre
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Celular
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Fecha de Ingreso
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Fecha de Nacimiento
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Vencimiento del Plan
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actividad
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredMembers?.map((member, index) => (
-                <tr key={member._id} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
+                <tr
+                  key={member._id}
+                  className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                >
                   <td className="px-6 py-4 whitespace-nowrap">
                     <input
                       type="checkbox"
@@ -174,19 +229,32 @@ function Members() {
                       {member.name}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{member.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{member.cellphone}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(member?.plan.initDate).toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {member.email}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {member.cellphone}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {new Date(member?.plan.initDate).toLocaleDateString()}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {member.birthday
-                      ? new Date(member.birthday).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
-                      : '...'}
+                      ? new Date(member.birthday).toLocaleDateString("es-AR", {
+                          day: "2-digit",
+                          month: "2-digit",
+                          year: "numeric",
+                        })
+                      : "..."}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {member.plan && member.plan.expirationDate
-                      ? new Date(member.plan.expirationDate).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
-                      : 'N/A'}
-                  </td>    
+                      ? new Date(member.plan.expirationDate).toLocaleDateString(
+                          "es-AR",
+                          { day: "2-digit", month: "2-digit", year: "numeric" }
+                        )
+                      : "N/A"}
+                  </td>
 
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {member.activities.map((activity, idx) => (
@@ -194,7 +262,9 @@ function Members() {
                         key={idx}
                         className="px-1 whitespace-nowrap text-sm text-gray-500"
                       >
-                        {`${activity.name}${idx < member.activities.length - 1 ? ',' : ''}`}
+                        {`${activity.name}${
+                          idx < member.activities.length - 1 ? "," : ""
+                        }`}
                       </span>
                     ))}
                   </td>
@@ -226,21 +296,24 @@ function Members() {
         </div>
       </div>
       {/* Modales */}
-      {isModalOpen && <NewMemberModal isOpen={isModalOpen} closeModal={handleModalClose} />}
+      {isModalOpen && (
+        <NewMemberModal isOpen={isModalOpen} closeModal={handleModalClose} />
+      )}
       {isPaymentModalOpen && renewedMember && (
         <PaymentModal
           isOpen={isPaymentModalOpen}
-          member={renewedMember} closePaymentModal={() => setIsPaymentModalOpen(false)}
+          member={renewedMember}
+          closePaymentModal={() => setIsPaymentModalOpen(false)}
         />
       )}
-      {
-        isEditModalOpen && selectedMemberToEdit && (
-          <EditMemberModal isOpen={isEditModalOpen}
-            member={selectedMemberToEdit}
-            activities={activities}
-            closeModal={handleEditModalClose}
-          />
-        )}
+      {isEditModalOpen && selectedMemberToEdit && (
+        <EditMemberModal
+          isOpen={isEditModalOpen}
+          member={selectedMemberToEdit}
+          activities={activities}
+          closeModal={handleEditModalClose}
+        />
+      )}
     </div>
   );
 }
