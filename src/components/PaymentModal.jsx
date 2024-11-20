@@ -5,21 +5,28 @@ import { addPayment } from "../redux/actions/Payments";
 const PaymentModal = ({ member, closePaymentModal }) => {
   const dispatch = useDispatch();
   const activities = useSelector((state) => state.activities.activities);
-  const [customAmount, setCustomAmount] = useState(member?.plan?.price || 0);
+  const [customAmount, setCustomAmount] = useState('');
   const [months, setMonths] = useState(1);
   const basePrice = member?.plan?.price || 0;
 
   useEffect(() => {
     // Update total amount when months change
-    setCustomAmount((basePrice * months).toFixed(2));
+    if (customAmount !== '') {
+      setCustomAmount((basePrice * months).toFixed(2));
+    }
   }, [months, basePrice]);
 
   const handlePayment = () => {
+    // Si no se ha ingresado un monto, usar el precio base por los meses seleccionados
+    const amountToCharge = customAmount === '' 
+      ? (basePrice * months).toFixed(2) 
+      : customAmount;
+
     const paymentData = {
       member: member._id,
-      amount: parseFloat(customAmount),
+      amount: parseFloat(amountToCharge),
       activities: member.activities,
-      months: parseInt(months) // Include months in payment data
+      months: parseInt(months)
     };
 
     dispatch(addPayment(paymentData));
@@ -98,7 +105,7 @@ const PaymentModal = ({ member, closePaymentModal }) => {
               step="0.01"
             />
             <span className="text-sm text-gray-500">
-              (${basePrice} × {months} {months === 1 ? 'mes' : 'meses'})
+              (${customAmount} × {months} {months === 1 ? 'mes' : 'meses'})
             </span>
           </div>
         </div>

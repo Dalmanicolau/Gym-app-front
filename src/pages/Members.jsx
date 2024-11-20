@@ -41,6 +41,8 @@ function Members() {
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Estado para el modal de edición
   const [selectedMemberToEdit, setSelectedMemberToEdit] = useState(null); // Miembro seleccionado para editar
+  const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] =
+    useState(false);
 
   useEffect(() => {
     dispatch(fetchMembers(currentPage, itemsPerPage, searchTerm));
@@ -101,11 +103,17 @@ function Members() {
   );
 
   const handleDeleteMember = async () => {
+    setIsDeleteConfirmModalOpen(true);
+  };
+
+  const confirmDeleteMember = async () => {
     try {
       await dispatch(
         deleteMember(selectedMembers[0], currentPage, itemsPerPage, searchTerm)
       );
+      dispatch(fetchMembers(currentPage, itemsPerPage, searchTerm));
       setSelectedMembers([]);
+      setIsDeleteConfirmModalOpen(false);
     } catch (error) {
       console.error(
         "Error al eliminar miembro:",
@@ -296,6 +304,35 @@ function Members() {
         </div>
       </div>
       {/* Modales */}
+      {/* Delete Confirmation Modal */}
+      {isDeleteConfirmModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full">
+            <h3 className="text-lg font-semibold mb-4 text-center">
+              Confirmar Eliminación
+            </h3>
+            <p className="text-gray-600 mb-6 text-center">
+              ¿Está seguro de que desea eliminar este miembro? Esta acción no se
+              puede deshacer.
+            </p>
+            <div className="flex justify-center space-x-4">
+              <button
+                className="btn btn-secondary text-white bg-gray-500 hover:bg-gray-600 px-4 py-2 rounded"
+                onClick={() => setIsDeleteConfirmModalOpen(false)}
+              >
+                Cancelar
+              </button>
+              <button
+                className="btn btn-danger text-white bg-red-600 hover:bg-red-700 px-4 py-2 rounded"
+                onClick={confirmDeleteMember}
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {isModalOpen && (
         <NewMemberModal isOpen={isModalOpen} closeModal={handleModalClose} />
       )}
