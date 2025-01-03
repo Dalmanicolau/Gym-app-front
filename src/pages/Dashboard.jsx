@@ -23,6 +23,7 @@ function Dashboard() {
     incomeByMonth, // Ingresos por mes
     expiringMembersCount,
     totalActivity,
+    monthsReference
   } = useSelector((state) => state.dashboard);
 
   useEffect(() => {
@@ -55,11 +56,31 @@ function Dashboard() {
   const months = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
   // Dataset para el gráfico de barras
-  const barChartData = months.map((month, index) => ({
-    month,
-    "Miembros Activos": table[index] || 0,
-    "Ingresos Mensuales": incomeByMonth[index] || 0,
-  }));
+// Función actualizada para preparar los datos del gráfico de barras
+const prepareBarChartData = () => {
+  // Verificar si tenemos los datos necesarios
+  if (!table || !incomeByMonth || !monthsReference) {
+    return [];
+  }
+
+  return monthsReference.map((yearMonth, index) => {
+    const [year, month] = yearMonth.split('-');
+    const monthNames = [
+      "Ene", "Feb", "Mar", "Abr", "May", "Jun",
+      "Jul", "Ago", "Sep", "Oct", "Novi", "Dic"
+    ];
+    
+    return {
+      month: `${monthNames[parseInt(month) - 1]} ${year}`,
+      monthShort: `${monthNames[parseInt(month) - 1]}\n${year}`,
+      "Miembros Activos": table[index] || 0,
+      "Ingresos Mensuales": incomeByMonth[index] || 0,
+    };
+  });
+};
+
+
+const barChartData = prepareBarChartData();
 
   const valueFormatter = (value) => `$${value}`;
 
@@ -87,6 +108,7 @@ function Dashboard() {
     ],
   };
 
+  
   return (
     <div className="bg-gray-50 min-h-screen p-6">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">
@@ -125,26 +147,48 @@ function Dashboard() {
       </div>
 
       {/* Gráficos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
-        {/* Gráfico de Ingresos por Actividad */}
-        <div className="p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">Ingresos por Actividad</h2>
-          <Pie data={incomeChartData} width={350} height={350} />
-        </div>
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+  {/* Gráfico de Ingresos por Actividad */}
+  <div className="p-6 bg-white rounded-lg shadow-lg">
+    <h2 className="text-2xl font-bold mb-4 text-gray-800">Ingresos por Actividad</h2>
+    <Pie data={incomeChartData} width={350} height={350} />
+  </div>
 
-        {/* Gráfico de Miembros por Deporte */}
-        <div className="p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800">Miembros por Deporte</h2>
-          <Pie data={membersChartData} width={350} height={350} />
-        </div>
+  {/* Gráfico de Miembros por Deporte */}
+  <div className="p-6 bg-white rounded-lg shadow-lg">
+    <h2 className="text-2xl font-bold mb-4 text-gray-800">Miembros por Deporte</h2>
+    <Pie data={membersChartData} width={350} height={350} />
+  </div>
 
-        {/* Gráfico de Ingresos y Miembros por Mes */}
-        <div className="p-6 bg-white rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold mb-4 text-gray-800">Miembros Activos e Ingresos por Mes</h2>
+  {/* Gráfico de Ingresos y Miembros por Mes */}
+  <div className="p-6 bg-white rounded-lg shadow-lg">
+    <h2 className="text-2xl font-bold mb-4 text-gray-800">Miembros Activos e Ingresos por Mes</h2>
+    <div className="w-full overflow-x-auto">
+      <div className="min-w-[600px]">
         <BarChart
-          className="p-2"
           dataset={barChartData}
-          xAxis={[{ scaleType: 'band', dataKey: 'month' }]}
+          xAxis={[{ 
+            scaleType: 'band', 
+            dataKey: 'monthShort',
+            tickLabelStyle: {
+              angle: 0,
+              textAnchor: 'middle',
+              fontSize: 12,
+              dy: 10
+            },
+            label: '',
+            labelStyle: {
+              fontSize: 14,
+              fontWeight: 'bold'
+            }
+          }]}
+          yAxis={[{ 
+            label: '$',
+            labelStyle: {
+              fontSize: 14,
+              fontWeight: 'bold'
+            }
+          }]}
           series={[
             {   
               dataKey: 'Miembros Activos',
@@ -159,13 +203,32 @@ function Dashboard() {
               valueFormatter: (value) => `$${value}`
             },
           ]}
-          width={400}
-          height={300}
+          width={600}
+          height={400}
+          margin={{ 
+            left: 80,
+            right: 50,
+            top: 50,
+            bottom: 50 
+          }}
+          layout="vertical"
+          slotProps={{
+            legend: {
+              direction: 'row',
+              position: { vertical: 'top', horizontal: 'middle' },
+              padding: 20,
+              labelStyle: {
+                fontSize: 14
+              }
+            }
+          }}
         />
       </div>
     </div>
+  </div>
+</div>
     </div>
   );
-}
+}        
 
 export default Dashboard;
